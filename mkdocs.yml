@@ -1,0 +1,14 @@
+site_name: Beginners MVC tutorial
+site_url: https://modir.github.io/mvc-tutorial/
+repo_url: https://github.com/modir/mvc-tutorial
+edit_uri: edit/main/docs/
+nav:
+  - index.md
+  - app.md
+theme:
+  name: readthedocs
+  features:
+    - content.code.copy
+markdown_extensions:
+  - admonition
+
