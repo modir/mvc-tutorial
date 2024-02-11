@@ -152,6 +152,7 @@ but rather template files.</p>
 have only a single point of entry. Instead of having several dozens of
 PHP files that do the following:</p>
 <pre><code class="language-php">&lt;?php
+// Include some global variables
 include('global.php');
 // Rest of the actual page code here
 </code></pre>
@@ -386,22 +387,18 @@ are many great DB abstraction libraries available but PHP5 and higher comes with
 already - PDO - so there's no need for a different library.</p>
 <p>Put the following code in the global.php in the root folder.</p>
 <pre><code class="language-php">&lt;?php
+// The data base connector
 $db = new PDO('mysql:host=localhost; dbname=demo', '[user]', '[password]');
 $registry-&gt;set('db', $db);
-</code></pre>
-<p>Now we include the global.php in our index.php file in our root
-folder.</p>
-<pre><code class="language-php"># Connect to DB
-include 'global.php';
 </code></pre>
 <p>In the above example we first create a new instance of the PDO
 library, and connect to our MySQL database. We then make the $db
 global, by using our Registry class.</p>
 <p>We won't need that for this tutorial bit it's important because we
 would need it later if we want to get data from a database, like with
-any other MVC System. The global.php should be diffrent from
+any other MVC System. The global.php should be different from
 system to system so that no sensitive data leaves you development
-environment.</p>
+environment. Hence you would usually not put it into a code repository.</p>
 <h2 id="creating-a-sample-model">Creating a sample model</h2>
 <p>Now if we want our program to use data that we deliver, we need to
 implement a class like Member. This is our Model. The Model
@@ -1028,5 +1025,5 @@ completely off limits for everyone.</p>
 
 <!--
 MkDocs version : 1.5.3
-Build Date UTC : 2024-02-11 20:40:49.007766+00:00
+Build Date UTC : 2024-02-11 20:49:52.317314+00:00
 -->
