@@ -62,7 +62,9 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#the-router-class">The Router class</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#the-controller">The Controller</a>
+    <li class="toctree-l2"><a class="reference internal" href="#the-controller-base-class">The Controller Base Class</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#first-test-controller">First Test Controller</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#the-view">The View</a>
     </li>
@@ -200,7 +202,8 @@ and also check to make sure that the current PHP version is at least
 <p class="admonition-title">Note</p>
 <p>The registry design pattern is used here because it is very simple to
 understand. Today you would see more often a Service Manager or other
-similar design patterns.</p>
+similar design patterns. More information about htis design pattern
+can be found on Martin Fowler's website at: <a href="https://martinfowler.com/eaaCatalog/registry.html">EEA Catalog: Registry</a></p>
 </div>
 <p>The next thing we'll have to do is setup a Registry object to hold all
 our global data. A registry object is passed around all the individual
@@ -297,7 +300,7 @@ integrate it:</p>
 <pre><code class="language-php">&lt;?php
 $registry = new Registry;
 // Set some data
-$registry-&gt;set ('name', 'Dennis Pallett');
+$registry-&gt;set ('name', 'Superman');
 // Get data, using get()
 echo $registry-&gt;get('name');
 // Get data, using array access
@@ -639,7 +642,7 @@ Stack trace:
 </code></pre>
 <p>Or you will get the '404 Not Found' error, because there are no
 controllers yet. But that's what we're going to create right now.</p>
-<h2 id="the-controller">The Controller</h2>
+<h2 id="the-controller-base-class">The Controller Base Class</h2>
 <p>The controller part of our MVC system is actually very
 simple, and requires very little work. First, make sure that
 the 'controllers' directory exists. Then, create a new file
@@ -659,6 +662,7 @@ Abstract Class Controller_Base {
 it does only two things: saves a copy of
 the Registry class and makes sure that all our controllers have an
 index() method.</p>
+<h2 id="first-test-controller">First Test Controller</h2>
 <p>Now let's create our first controller. Create a new file called
 'Controller_Index.php' in the 'controllers' directory, and add the following code
 to it:</p>
@@ -870,5 +874,5 @@ completely off limits for everyone.</p>
 
 <!--
 MkDocs version : 1.5.3
-Build Date UTC : 2024-02-11 19:09:16.080589+00:00
+Build Date UTC : 2024-02-11 19:55:01.543105+00:00
 -->

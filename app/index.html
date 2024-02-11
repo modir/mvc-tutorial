@@ -46,13 +46,15 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="./">A simple Todo -App</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#cleanup">Cleanup</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#controller">Controller</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#view">View</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#model">Model</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#intregrating-the-model-into-the-controller">Intregrating the Model into the Controller</a>
+    <li class="toctree-l2"><a class="reference internal" href="#intregrating-the-model-into-the-controller-with-a-repository">Intregrating the Model into the Controller with a Repository</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#making-a-functional-view">Making a functional View</a>
     </li>
@@ -84,7 +86,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="a-simple-todo-app">A simple Todo -App</h1>
-<p>Now that we have our own MVC up and running we can start
+<p>Now that we have our own MVC framework up and running we can start
 implementing functionality. We will create a Todo App to keep track
 of our notes and tasks.</p>
 <p>This Todo App can save new Notes, change existing ones and delete
@@ -94,6 +96,10 @@ So first of all we change our existing files. Everything in the
 controllers folder gets the prefix "Controller_" i.e.:
 Controller_Index.php and everything in models folder gets the
 Prefix "Model_". Our classes in the "classes" folder stay as they are.</p>
+<h2 id="cleanup">Cleanup</h2>
+<p>Durring writing the MVC framework we created several test files in the models, controller and view
+directories. We should delete all of them first before we go on with the new
+app. Those 3 directories should be empty.</p>
 <h2 id="controller">Controller</h2>
 <p>To access this new part of our App we need to set up a new
 controller. So when we open the the site with /Todolist at the end
@@ -186,11 +192,15 @@ class Model_Todoitem {
 because our PDO object will do it for us. When we create an object
 from the database with the help of the PDO a constructor is call that
 fills in the attributes automatically.</p>
-<h2 id="intregrating-the-model-into-the-controller">Intregrating the Model into the Controller</h2>
+<h2 id="intregrating-the-model-into-the-controller-with-a-repository">Intregrating the Model into the Controller with a Repository</h2>
 <p>If we want to use our model we need to expand upon our controller
-to handle our requests. Then we need to build a repository to handle
-the CRUD for App. We will also need a Repository wich we will do
-after the Controller is done.</p>
+to handle our requests. In our case we will use for this a Repository.</p>
+<div class="admonition note">
+<p class="admonition-title">What is a repository?</p>
+<p>The repository design pattern is another important design pattern. It helps
+you to simplify the access to data (bases). I recommend you to read first
+more about it at <a href="https://www.geeksforgeeks.org/repository-design-pattern/">GeeksForGeeks: Repository Design Pattern</a>.</p>
+</div>
 <p>First we will expand the controller like this:</p>
 <pre><code class="language-php">Class Controller_Todolist extends Controller_Base {
 
@@ -290,7 +300,7 @@ the help of it.</p>
 <p>As we did with our controller we also create a abstract Class called
 "Repository_Base" in our classes folder:</p>
 <pre><code class="language-php">&lt;?php
-Abstract Class Repository_Base{
+Abstract Class Repository_Base {
     protected $registry;
 
     /**
@@ -388,7 +398,7 @@ Class Repository_Todoitem extends Repository_Base {
     }
 }
 </code></pre>
-<p>All we do here is basically prepre our different statements for our
+<p>All we do here is basically prepare our different statements for our
 CRUD functionality. Than we either fetch our object or objects, fill
 them in and return them. Or we provide data to the statements and
 call upon the database to either update an entry or delete it with it's
@@ -398,8 +408,8 @@ id.</p>
 For that I prepared three views. "Todoitems_Page.php" to view all
 of our entries. "Todoentry_Page.php" to view a single entry and edit
 or delete it. And "Todoentry_Add_Page" for making a new entry.</p>
-<p>Create these files in the views folder.</p>
-<p>Todoitems_Page:</p>
+<p>Create these files in the <code>views</code> folder.</p>
+<p>Todoitems_Page.php:</p>
 <pre><code class="language-php">&lt;!DOCTYPE html&gt;
 &lt;html lang=&quot;en&quot;&gt;
 &lt;head&gt;
@@ -426,7 +436,7 @@ foreach($entries as $entry) {
 &lt;/body&gt;
 &lt;/html&gt;
 </code></pre>
-<p>Todoentry_Page:</p>
+<p>Todoentry_Page.php:</p>
 <pre><code class="language-php">&lt;!DOCTYPE html&gt;
 &lt;html lang=&quot;en&quot;&gt;
 &lt;head&gt;
