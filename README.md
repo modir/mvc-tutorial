@@ -13,7 +13,7 @@ from merging all together.
 The tutorial itself can be found here: https://modir.github.io/mvc-tutorial/
 
 ## Feedack
-If you find any bugs or you have feedback please give them to me either as issues.
+If you find any bugs or you have feedback please give them to me as issues.
 I will then look at them and make it better.
 
 ## Copyright

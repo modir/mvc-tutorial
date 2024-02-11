@@ -54,6 +54,7 @@ PHP files that do the following:
 
 ~~~php
 <?php
+// Include some global variables
 include('global.php');
 // Rest of the actual page code here
 ~~~
@@ -349,16 +350,9 @@ Put the following code in the global.php in the root folder.
 
 ~~~php
 <?php
+// The data base connector
 $db = new PDO('mysql:host=localhost; dbname=demo', '[user]', '[password]');
 $registry->set('db', $db);
-~~~
-
-Now we include the global.php in our index.php file in our root
-folder.
-
-~~~php
-# Connect to DB
-include 'global.php';
 ~~~
 
 In the above example we first create a new instance of the PDO
@@ -367,9 +361,9 @@ global, by using our Registry class.
 
 We won't need that for this tutorial bit it's important because we
 would need it later if we want to get data from a database, like with
-any other MVC System. The global.php should be diffrent from
+any other MVC System. The global.php should be different from
 system to system so that no sensitive data leaves you development
-environment.
+environment. Hence you would usually not put it into a code repository.
 
 ## Creating a sample model
 
