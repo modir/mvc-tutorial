@@ -48,6 +48,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#folders">Folders</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#file-names">File names</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#one-point-of-entry">One point of entry</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#startup-tasks">Startup Tasks</a>
@@ -138,6 +140,13 @@ and information to the user. The view (or multiple views) is
 what you see when you visit a website.</p>
 </li>
 </ul>
+<h2 id="file-names">File names</h2>
+<p>For ease of use we have the following naming convention:
+Everything in the controllers folder gets the prefix "Controller_" i.e.:
+<code>Controller_Index.php</code> and everything in models folder gets the
+prefix "Model_". Our classes in the <code>classes</code> folder are special as they
+are the framework itself. The views are special too as they are not classes
+but rather template files.</p>
 <h2 id="one-point-of-entry">One point of entry</h2>
 <p>One of the important things about our MVC system is that it will
 have only a single point of entry. Instead of having several dozens of
@@ -228,21 +237,29 @@ classes. Whenever PHP encounters a non-existent class, it will first
 call a custom __autoload() function, and only then declare an error.
 This can be used to load classes on-the-fly.</p>
 <p>Put one of the following codes before the previous code example:</p>
-<pre><code class="language-php">// For loading classes
+<pre><code class="language-php">/**
+ * For loading classes
+ *
+ * @param  mixed $class_name
+ * @return void
+ */
 function custom_autoload($class_name) {
-    $filename = strtolower($class_name) . '.php';
-    $file = site_path . 'classes' . DIRSEP . $filename;
-    if(file_exists($file) == false){
-        return false;
-    }
-    include($file);
-}
 
-spl_autoload_register('custom_autoload');
+    //$filename = strtolower($class_name) . '.php';
+    $filename = $class_name . '.php';
+    $types = ['classes', 'controllers', 'models', 'views'];
+    foreach ($types as $type) {
+        $file = site_path . $type . DIRSEP . $filename;
+        if (file_exists($file)) {
+            include($file);
+        }
+    }
+    return false;
+}
 </code></pre>
 <p>Our custom_autoload() function takes the class name, passed as an
-argument, and checks if a similar named file exists in the classes
-directory. If the file doesn't exist, the function will simply return
+argument, and checks if a file exists in any of the four main directories.
+If the file doesn't exist, the function will simply return
 false and a fatal error will still show up, but if the file does exist, it
 will be included, which means the class is suddenly there, and no
 error is thrown. For it to work we need to define the
@@ -477,12 +494,40 @@ correct command/action (method) from the right controller. We will create a new 
 classes folder. First step is to create a basic skeleton for the router
 class:</p>
 <pre><code class="language-php">&lt;?php
-Class Router {
+
+/**
+ * Router
+ */
+class Router {
+
+    /**
+     * registry
+     *
+     * @var mixed
+     */
     private $registry;
+
+    /**
+     * path
+     *
+     * @var mixed
+     */
     private $path;
+
+    /**
+     * args
+     *
+     * @var array
+     */
     private $args = array();
 
-    function __construct($registry){
+    /**
+     * __construct
+     *
+     * @param  mixed $registry
+     * @return void
+     */
+    function __construct($registry) {
         $this-&gt;registry = $registry;
     }
 }
@@ -527,51 +572,63 @@ first bit of this method looks like this:</p>
 <p>As you can see, it uses another method, getController() to get the
 controller name, and a few other variables. This method looks like
 this:</p>
-<pre><code class="language-php">/**
-* getController
-*
-* @param mixed $file
-* @param mixed $controller
-* @param mixed $action
-* @param mixed $args
-* @return void
-*/
-private function getController(&amp;$file, &amp;$controller, &amp;$action, &amp;$args) {
-    $route = (empty($_GET['route'])) ? '' : $_GET['route'];
-    if(empty($route)){$route = 'index'; }
+<pre><code class="language-php">    /**
+     * getController
+     *
+     * @param  mixed $file
+     * @param  mixed $controller
+     * @param  mixed $action
+     * @param  mixed $args
+     * @return void
+     */
+    private function getController(&amp;$file, &amp;$controller, &amp;$action, &amp;$args) {
+        $route = (empty($_GET['route'])) ? '' : $_GET['route'];
 
-    // Get separate parts
-    $route = trim($route, '\\');
-    $parts = explode('/', $route);
-
-    // Find right controller
-    $cmd_path = $this-&gt;path;
-    foreach($parts as $part){
-        $fullpath = $cmd_path .'Controller_'. $part;
-
-        // Is there a dir with this path?
-        if(is_dir($fullpath)){
-            $cmd_path .= $part . DIRSEP;
-            array_shift($parts);
-            continue;
+        if (empty($route)) {
+            $route = 'index';
         }
 
-        // Find the file
-        if(is_file($fullpath . '.php')){
-            $controller = $part;
-            array_shift($parts);
-            break;
+        // Get separate parts
+        $route = trim($route, '\\');
+        $parts = explode('/', $route);
+
+
+
+        // Find right controller
+        $cmd_path = $this-&gt;path;
+        foreach ($parts as $part) {
+            $fullpath = $cmd_path . 'Controller_' . ucfirst($part);
+
+            // Is there a dir with this path?
+            if (is_dir($fullpath)) {
+                $cmd_path .= $part . DIRSEP;
+                array_shift($parts);
+                continue;
+            }
+
+            // Find the file
+            if (is_file($fullpath . '.php')) {
+                $controller = ucfirst($part);
+                array_shift($parts);
+                break;
+            }
+
         }
+
+        if (empty($controller)) {
+            $controller = 'index';
+        };
+
+        // Get action
+        $action = array_shift($parts);
+        if (empty($action)) {
+            $action = 'index';
+        }
+
+        $args = $parts;
+        $file = $cmd_path . 'Controller_' . $controller . '.php';
+        $this-&gt;registry-&gt;set('args', $args);
     }
-    if(empty($controller)){$controller = 'index';};
-
-    // Get action
-    $action = array_shift($parts);
-    if(empty($action)){$action = 'index'; }
-    $args = $parts;
-    $file = $cmd_path . 'Controller_'. $controller . '.php';
-    $this-&gt;registry-&gt;set('args', $args);
-}
 </code></pre>
 <p>Let's go through this method. It first gets the value of the $route
 query string variable, and then proceeds to split it into separate
@@ -594,29 +651,37 @@ path, controller name and the extension.</p>
 <p>Now that the request has been analysed it's up to the delegate()
 method to load the controller and execute the action. The complete
 delegate() method looks like this:</p>
-<pre><code class="language-php">function delegate() {
-    // Analyze route
-    $this-&gt;getController($file, $controller, $action, $args);
+<pre><code class="language-php">    /**
+     * delegate
+     *
+     * @return void
+     */
+    function delegate() {
 
-    // File available?
-    if(is_readable($file) == false) {
-        die('404 Not Found');
+        // Analyze route
+        $this-&gt;getController($file, $controller, $action, $args);
+
+        // File available?
+        if (is_readable($file) == false) {
+            //Add 404 view to be displayed
+            die('404 Not Found');
+        }
+
+        // Include the file
+        include($file);
+
+        // Initiate the class
+        $class = 'Controller_' . $controller;
+        $controller = new $class($this-&gt;registry);
+
+        // Action available?
+        if (is_callable(array($controller, $action)) == false) {
+            die('404 Not Found');
+        }
+
+        // Run action
+        $controller-&gt;$action();
     }
-    // Include the file
-    include($file);
-
-    // Initiate the class
-    $class = 'Controller_' . $controller;
-    $controller = new$class($this-&gt;registry);
-
-    // Action available?
-    if(is_callable(array($controller, $action)) == false) {
-        die('404 Not Found');
-    }
-
-    // Run action
-    $controller-&gt;$action();
-}
 </code></pre>
 <p>After having analysed the request with the getController() method,
 we first make sure that the file actually exists, and if it doesn't we
@@ -707,15 +772,43 @@ MVC system.</p>
 <p>Just like the Model, there are several different ways of doing the
 View part of our MVC system. We could use the Router to
 automatically load another file called something like
-'view_{name}.php', but to keep this tutorial simple, we'll create a
-custom View class, which can be used to show views.
-First, create a new file called 'view.php' in the 'classes' directory,
+'view_{name}.php', but in order to talk about more design patterns in this tutorial, we'll create a
+custom View class, which can be used to show views.</p>
+<p>We will have here a general layout for the basic website with the content that is
+always there (e.g. footer or header) and then it will load in the page
+specific content.</p>
+<p>First, create a new file called 'view.php' in the 'classes' directory,
 and put the following code in it:</p>
 <pre><code class="language-php">&lt;?php
-Class View {
+class View {
+
+    /**
+     * layoutPath
+     *
+     * @var mixed
+     */
+    private $layoutPath;
+
+    /**
+     * registry
+     *
+     * @var mixed
+     */
     private $registry;
+
+    /**
+     * vars
+     *
+     * @var array
+     */
     private $vars = array();
 
+    /**
+     * __construct
+     *
+     * @param  mixed $registry
+     * @return void
+     */
     function __construct($registry) {
         $this-&gt;registry = $registry;
     }
@@ -731,19 +824,35 @@ $registry-&gt;set('view', $view);
 <p>Because we want to use data from the model and controller in our
 views, we will have to write a set() method to make variables
 available in the view. See the example below:</p>
-<pre><code class="language-php">function set($varname, $value, $overwrite = false){
-    if(isset($this-&gt;vars[$varname]) == true AND $overwrite == false) {
-        trigger_error('Unable to set var `' . $varname . '`. Already set, and overwrite not
-        allowed.',E_USER_NOTICE);
-        return false;
+<pre><code class="language-php">    /**
+     * set a view
+     *
+     * @param  mixed $varname
+     * @param  mixed $value
+     * @param  mixed $overwrite
+     * @return void
+     */
+    function set($varname, $value, $overwrite = false) {
+        if (isset($this-&gt;vars[$varname]) == true and $overwrite == false) {
+            trigger_error('Unable to set var `' . $varname . '`. Already set, and overwrite not allowed.', E_USER_NOTICE);
+            return false;
+        }
+
+        $this-&gt;vars[$varname] = $value;
+
+        return true;
     }
-    $this-&gt;vars[$varname] = $value;
-    return true;
-}
-function remove($varname) {
-    unset($this-&gt;vars[$varname]);
-    return true;
-}
+
+    /**
+     * remove a view
+     *
+     * @param  mixed $varname
+     * @return void
+     */
+    function remove($varname) {
+        unset($this-&gt;vars[$varname]);
+        return true;
+    }
 </code></pre>
 <p>As you can see, the set() and remove() methods are fairly simple
 methods, used to set and remove a variable.</p>
@@ -754,18 +863,63 @@ then using an include() call to show a view. Of course your show()
 method can be completely different, and load the views from the
 database or do something else. See the code snippet below for the
 show()method we'll be using:</p>
-<pre><code class="language-php">function show($name){
-    $path = site_path . 'views' . DIRSEP . $name . '.php';
-    if(file_exists($path) == false) {
-        trigger_error('View `' . $name . '` does not exist.', E_USER_NOTICE);
-        return false;
+<pre><code class="language-php">    /**
+     * Used to show a view
+     *
+     * @param  mixed $name
+     * @return void
+     */
+    function show($name) {
+
+        $path = site_path . 'views' . DIRSEP . $name . '.php';
+
+        if (file_exists($path) == false) {
+            trigger_error('View `' . $name . '` does not exist.', E_USER_NOTICE);
+            return false;
+        }
+
+        // Load variables
+        foreach ($this-&gt;vars as $key =&gt; $value) {
+            $$key = $value;
+        }
+
+        //Turn on output buffering
+        ob_start();
+
+        //Includes the path set in the gobal.php config file
+        include($path);
+
+        //Gets current buffer content and deletes it
+        $view = ob_get_clean();
+
+        //Sets the layoutpath from the registry
+        $this-&gt;layoutPath = $this-&gt;registry-&gt;get('layoutPath');
+
+        //Includes the layout file
+        include $this-&gt;layoutPath;
     }
-    // Load variables
-    foreach($this-&gt;vars as $key =&gt; $value) {
-        $$key = $value;
-    }
-    include($path);
-}
+</code></pre>
+<p>As you can see we are using a layoutPath variable from the registry. In order to
+use this variable we need to set it. For this add the following content to
+the <code>global.php</code> file:</p>
+<pre><code class="language-php">$layoutPath = &quot;views/LayoutDefault.php&quot;;
+$registry-&gt;set('layoutPath', $layoutPath);
+</code></pre>
+<p>Now we only need to create this layout file. So create now a file
+<code>views/LayoutDefault.php</code> and add this content:</p>
+<pre><code class="language-php">&lt;html lang=&quot;en&quot;&gt;
+
+&lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot;&gt;
+    &lt;title&gt;MVC Tutorial&lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+   &lt;!-- this is the $view variable which was defined in the show-method before. --&gt;
+   &lt;?php echo $view; ?&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
 </code></pre>
 <p>Our View class is now complete, and can be used to display views in
 the controller. For example,create a new file called
@@ -874,5 +1028,5 @@ completely off limits for everyone.</p>
 
 <!--
 MkDocs version : 1.5.3
-Build Date UTC : 2024-02-11 19:55:01.543105+00:00
+Build Date UTC : 2024-02-11 20:40:49.007766+00:00
 -->

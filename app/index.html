@@ -91,11 +91,11 @@ implementing functionality. We will create a Todo App to keep track
 of our notes and tasks.</p>
 <p>This Todo App can save new Notes, change existing ones and delete
 the one we don't need anymore.</p>
-<p>For ease of use we also change our naming convention.
-So first of all we change our existing files. Everything in the
-controllers folder gets the prefix "Controller_" i.e.:
-Controller_Index.php and everything in models folder gets the
-Prefix "Model_". Our classes in the "classes" folder stay as they are.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We will not focus on design here. You can add a lot more HTML or CSS
+to the files if you want.</p>
+</div>
 <h2 id="cleanup">Cleanup</h2>
 <p>Durring writing the MVC framework we created several test files in the models, controller and view
 directories. We should delete all of them first before we go on with the new
@@ -410,16 +410,7 @@ of our entries. "Todoentry_Page.php" to view a single entry and edit
 or delete it. And "Todoentry_Add_Page" for making a new entry.</p>
 <p>Create these files in the <code>views</code> folder.</p>
 <p>Todoitems_Page.php:</p>
-<pre><code class="language-php">&lt;!DOCTYPE html&gt;
-&lt;html lang=&quot;en&quot;&gt;
-&lt;head&gt;
-&lt;link rel=&quot;stylesheet&quot; href=&quot;/styles.css&quot;&gt;
-&lt;meta charset=&quot;UTF-8&quot;&gt;
-&lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot;&gt;
-&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
-&lt;title&gt;Todoitems&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
+<pre><code class="language-php">&lt;h1&gt;Todolist&lt;/h1&gt;
 &lt;?php
 foreach($entries as $entry) {
     if($entry-&gt;getState() == 1){
@@ -433,21 +424,9 @@ foreach($entries as $entry) {
 }
 ?&gt;
 &lt;a href=&quot;/Todolist/add&quot;&gt;Neuer Eintrag&lt;/a&gt;
-&lt;/body&gt;
-&lt;/html&gt;
 </code></pre>
 <p>Todoentry_Page.php:</p>
-<pre><code class="language-php">&lt;!DOCTYPE html&gt;
-&lt;html lang=&quot;en&quot;&gt;
-&lt;head&gt;
-&lt;link rel=&quot;stylesheet&quot; href=&quot;/styles.css&quot;&gt;
-&lt;meta charset=&quot;UTF-8&quot;&gt;
-&lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot;&gt;
-&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
-&lt;title&gt;Todoentry&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-&lt;form method=&quot;POST&quot; action=&quot;/Todolist/edit/&quot; class=&quot;todoentry&quot;&gt;
+<pre><code class="language-php">&lt;form method=&quot;POST&quot; action=&quot;/Todolist/edit/&quot; class=&quot;todoentry&quot;&gt;
 &lt;textarea id=&quot;todotext&quot; name=&quot;content&quot; rows=&quot;4&quot; cols=&quot;50&quot; autofocus&gt;&lt;?php
 echo $content?&gt;&lt;/textarea&gt;
 &lt;span&gt; done?
@@ -463,21 +442,9 @@ checked' ?&gt; &gt;
 &lt;input type=&quot;submit&quot; value=&quot;delete&quot;&gt;
 &lt;input type=&quot;hidden&quot; name=&quot;id&quot; value=&quot;&lt;?=$id;?&gt;&quot;&gt;
 &lt;/form&gt;
-&lt;/body&gt;
-&lt;/html&gt;
 </code></pre>
 <p>Todoentry_Add_Page:</p>
-<pre><code class="language-php">&lt;!DOCTYPE html&gt;
-&lt;html lang=&quot;en&quot;&gt;
-&lt;head&gt;
-&lt;link rel=&quot;stylesheet&quot; href=&quot;/styles.css&quot;&gt;
-&lt;meta charset=&quot;UTF-8&quot;&gt;
-&lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot;&gt;
-&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
-&lt;title&gt;New Entry&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-&lt;h1&gt;New Todo&lt;/h1&gt;
+<pre><code class="language-php">&lt;h1&gt;New Todo&lt;/h1&gt;
 &lt;form method=&quot;POST&quot;&gt;
 &lt;fieldset&gt;
 &lt;label&gt;
@@ -495,8 +462,6 @@ Status
 &lt;/fieldset&gt;
 &lt;input type=&quot;submit&quot; value=&quot;Save&quot;&gt;
 &lt;/form&gt;
-&lt;/body&gt;
-&lt;/html&gt;
 </code></pre>
 <p>Now we have every thing in place for the Todoapp to work.</p>
               
