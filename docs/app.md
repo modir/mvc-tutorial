@@ -7,11 +7,9 @@ of our notes and tasks.
 This Todo App can save new Notes, change existing ones and delete
 the one we don't need anymore.
 
-For ease of use we also change our naming convention.
-So first of all we change our existing files. Everything in the
-controllers folder gets the prefix "Controller_" i.e.:
-Controller_Index.php and everything in models folder gets the
-Prefix "Model_". Our classes in the "classes" folder stay as they are.
+!!!note
+    We will not focus on design here. You can add a lot more HTML or CSS
+	to the files if you want.
 
 ## Cleanup
 
@@ -366,16 +364,7 @@ Create these files in the `views` folder.
 Todoitems_Page.php:
 
 ~~~php
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<link rel="stylesheet" href="/styles.css">
-<meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Todoitems</title>
-</head>
-<body>
+<h1>Todolist</h1>
 <?php
 foreach($entries as $entry) {
 	if($entry->getState() == 1){
@@ -389,23 +378,11 @@ foreach($entries as $entry) {
 }
 ?>
 <a href="/Todolist/add">Neuer Eintrag</a>
-</body>
-</html>
 ~~~
 
 Todoentry_Page.php:
 
 ~~~php
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<link rel="stylesheet" href="/styles.css">
-<meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Todoentry</title>
-</head>
-<body>
 <form method="POST" action="/Todolist/edit/" class="todoentry">
 <textarea id="todotext" name="content" rows="4" cols="50" autofocus><?php
 echo $content?></textarea>
@@ -422,23 +399,11 @@ checked' ?> >
 <input type="submit" value="delete">
 <input type="hidden" name="id" value="<?=$id;?>">
 </form>
-</body>
-</html>
 ~~~
 
 Todoentry_Add_Page:
 
 ~~~php
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<link rel="stylesheet" href="/styles.css">
-<meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>New Entry</title>
-</head>
-<body>
 <h1>New Todo</h1>
 <form method="POST">
 <fieldset>
@@ -457,8 +422,6 @@ Status
 </fieldset>
 <input type="submit" value="Save">
 </form>
-</body>
-</html>
 ~~~
 
 Now we have every thing in place for the Todoapp to work.
