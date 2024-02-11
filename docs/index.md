@@ -121,7 +121,8 @@ and also check to make sure that the current PHP version is at least
 !!! note
     The registry design pattern is used here because it is very simple to
     understand. Today you would see more often a Service Manager or other
-    similar design patterns.
+    similar design patterns. More information about htis design pattern
+	can be found on Martin Fowler's website at: [EEA Catalog: Registry](https://martinfowler.com/eaaCatalog/registry.html)
 
 The next thing we'll have to do is setup a Registry object to hold all
 our global data. A registry object is passed around all the individual
@@ -244,7 +245,7 @@ integrate it:
 <?php
 $registry = new Registry;
 // Set some data
-$registry->set ('name', 'Dennis Pallett');
+$registry->set ('name', 'Superman');
 // Get data, using get()
 echo $registry->get('name');
 // Get data, using array access
@@ -412,7 +413,7 @@ class Model_Member {
 	public function setFirstname(string $firstname) {
 		$this->firstname = $firstname;
 	}
-	
+
 	/**
 	* setLastname
 	*
@@ -486,7 +487,7 @@ Router class:
 function setPath($path){
 	$path = trim($path, '/\\');
 	$path .= DIRSEP;
-	
+
 	if(is_dir($path) == false) {
 		throw new Exception ('Invalid controller path: `' . $path . '`');
 	}
@@ -531,23 +532,23 @@ this:
 private function getController(&$file, &$controller, &$action, &$args) {
 	$route = (empty($_GET['route'])) ? '' : $_GET['route'];
 	if(empty($route)){$route = 'index'; }
-	
+
 	// Get separate parts
 	$route = trim($route, '\\');
 	$parts = explode('/', $route);
-	
+
 	// Find right controller
 	$cmd_path = $this->path;
 	foreach($parts as $part){
 		$fullpath = $cmd_path .'Controller_'. $part;
-		
+
 		// Is there a dir with this path?
 		if(is_dir($fullpath)){
 			$cmd_path .= $part . DIRSEP;
 			array_shift($parts);
 			continue;
 		}
-		
+
 		// Find the file
 		if(is_file($fullpath . '.php')){
 			$controller = $part;
@@ -556,7 +557,7 @@ private function getController(&$file, &$controller, &$action, &$args) {
 		}
 	}
 	if(empty($controller)){$controller = 'index';};
-	
+
 	// Get action
 	$action = array_shift($parts);
 	if(empty($action)){$action = 'index'; }
@@ -597,23 +598,23 @@ delegate() method looks like this:
 function delegate() {
 	// Analyze route
 	$this->getController($file, $controller, $action, $args);
-	
+
 	// File available?
 	if(is_readable($file) == false) {
 		die('404 Not Found');
 	}
 	// Include the file
 	include($file);
-	
+
 	// Initiate the class
 	$class = 'Controller_' . $controller;
 	$controller = new$class($this->registry);
-	
+
 	// Action available?
 	if(is_callable(array($controller, $action)) == false) {
 		die('404 Not Found');
 	}
-	
+
 	// Run action
 	$controller->$action();
 }
@@ -651,7 +652,7 @@ Stack trace:
 Or you will get the '404 Not Found' error, because there are no
 controllers yet. But that's what we're going to create right now.
 
-## The Controller
+## The Controller Base Class
 
 The controller part of our MVC system is actually very
 simple, and requires very little work. First, make sure that
@@ -666,7 +667,7 @@ Abstract Class Controller_Base {
 	function __construct($registry){
 		$this->registry = $registry;
 	}
-	
+
 	abstract function index();
 }
 ~~~
@@ -675,6 +676,8 @@ This abstract class will be the parent class for all our controllers, and
 it does only two things: saves a copy of
 the Registry class and makes sure that all our controllers have an
 index() method.
+
+## First Test Controller
 
 Now let's create our first controller. Create a new file called
 'Controller_Index.php' in the 'controllers' directory, and add the following code
@@ -705,7 +708,7 @@ Class Controller_Members Extends Controller_Base {
 	function index(){
 		echo 'Default index of the `members` controllers';
 	}
-	
+
 	function view() {
 		echo 'You are viewing the members/view request';
 	}
@@ -818,7 +821,7 @@ Then, in the index controller (under controllers/index.php):
 function index() {
 	$firstname = 'Peter';
 	$lastname = 'Meier';
-	
+
 	$model_data = new Model_Member($firstname, $lastname);
 
 	// Set the model into the registry

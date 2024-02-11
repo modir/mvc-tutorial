@@ -1,6 +1,6 @@
 # A simple Todo -App
 
-Now that we have our own MVC up and running we can start
+Now that we have our own MVC framework up and running we can start
 implementing functionality. We will create a Todo App to keep track
 of our notes and tasks.
 
@@ -13,7 +13,14 @@ controllers folder gets the prefix "Controller_" i.e.:
 Controller_Index.php and everything in models folder gets the
 Prefix "Model_". Our classes in the "classes" folder stay as they are.
 
+## Cleanup
+
+Durring writing the MVC framework we created several test files in the models, controller and view
+directories. We should delete all of them first before we go on with the new
+app. Those 3 directories should be empty.
+
 ## Controller
+
 To access this new part of our App we need to set up a new
 controller. So when we open the the site with /Todolist at the end
 of our URL our router can find it and the controller can spring into
@@ -29,6 +36,7 @@ Class Controller_Todo Extends Controller_Base {
 ~~~
 
 ## View
+
 Our Controller now calls a view called "Todoitems_Page", but we
 haven't had made this view yet so we have to make it. In the View
 folder we create a new file called "Todoitems_Page".
@@ -66,7 +74,7 @@ class Model_Todoitem {
 	public function getId() {
 		return $this->id;
 	}
-	
+
 	/**
 	* Set the value of id
 	*
@@ -76,14 +84,14 @@ class Model_Todoitem {
 		$this->id = $id;
 		return $this;
 	}
-	
+
 	/**
 	* Get the value of content
 	*/
 	public function getContent() {
 		return $this->content;
 	}
-	
+
 	/**
 	* Set the value of content
 	*
@@ -93,14 +101,14 @@ class Model_Todoitem {
 		$this->content = $content;
 		return $this;
 	}
-	
+
 	/**
 	* Get the value of state
 	*/
 	public function getState() {
 		return $this->state;
 	}
-	
+
 	/**
 	* Set the value of state
 	*
@@ -118,12 +126,15 @@ because our PDO object will do it for us. When we create an object
 from the database with the help of the PDO a constructor is call that
 fills in the attributes automatically.
 
-## Intregrating the Model into the Controller
+## Intregrating the Model into the Controller with a Repository
 
 If we want to use our model we need to expand upon our controller
-to handle our requests. Then we need to build a repository to handle
-the CRUD for App. We will also need a Repository wich we will do
-after the Controller is done.
+to handle our requests. In our case we will use for this a Repository.
+
+!!!note "What is a repository?"
+    The repository design pattern is another important design pattern. It helps
+	you to simplify the access to data (bases). I recommend you to read first
+	more about it at [GeeksForGeeks: Repository Design Pattern](https://www.geeksforgeeks.org/repository-design-pattern/).
 
 First we will expand the controller like this:
 
@@ -155,7 +166,7 @@ Class Controller_Todolist extends Controller_Base {
 		$this->registry['view']->set('state', $entry->getState());
 		$this->registry['view']->show('Todoentry_Page');
 	}
-	
+
 	/**
 	* add
 	*
@@ -234,9 +245,9 @@ As we did with our controller we also create a abstract Class called
 
 ~~~php
 <?php
-Abstract Class Repository_Base{
+Abstract Class Repository_Base {
 	protected $registry;
-	
+
 	/**
 	* __construct
 	*
@@ -275,7 +286,7 @@ Class Repository_Todoitem extends Repository_Base {
 		$todoItem = $statement->fetchObject('Model_Todoitem');
 		return $todoItem;
 	}
-	
+
 	/**
 	* fetchAll
 	*
@@ -288,7 +299,7 @@ Class Repository_Todoitem extends Repository_Base {
 		$rows = $this->db->query($query)->fetchAll(PDO::FETCH_CLASS, 'Model_Todoitem');
 		return $rows;
 	}
-	
+
 	/**
 	* add
 	*
@@ -304,7 +315,7 @@ Class Repository_Todoitem extends Repository_Base {
 		]);
 		return $result;
 	}
-	
+
 	/**
 	* delete
 	*
@@ -317,7 +328,7 @@ Class Repository_Todoitem extends Repository_Base {
 		$result = $statement->execute([':id' => $id]);
 		return $result;
 	}
-	
+
 	/**
 	* update
 	*
@@ -337,7 +348,7 @@ Class Repository_Todoitem extends Repository_Base {
 }
 ~~~
 
-All we do here is basically prepre our different statements for our
+All we do here is basically prepare our different statements for our
 CRUD functionality. Than we either fetch our object or objects, fill
 them in and return them. Or we provide data to the statements and
 call upon the database to either update an entry or delete it with it's
@@ -350,9 +361,9 @@ For that I prepared three views. "Todoitems_Page.php" to view all
 of our entries. "Todoentry_Page.php" to view a single entry and edit
 or delete it. And "Todoentry_Add_Page" for making a new entry.
 
-Create these files in the views folder.
+Create these files in the `views` folder.
 
-Todoitems_Page:
+Todoitems_Page.php:
 
 ~~~php
 <!DOCTYPE html>
@@ -382,7 +393,7 @@ foreach($entries as $entry) {
 </html>
 ~~~
 
-Todoentry_Page:
+Todoentry_Page.php:
 
 ~~~php
 <!DOCTYPE html>
