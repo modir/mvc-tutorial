@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://modir.github.io/mvc-tutorial/app/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>A simple Todo -App - Beginners MVC tutorial</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "A simple Todo -App";
+        var mkdocs_page_input_path = "app.md";
+        var mkdocs_page_url = "/mvc-tutorial/app/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Beginners MVC tutorial
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Building a simple MVC system with PHP7 and higher</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">A simple Todo -App</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#controller">Controller</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#view">View</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#model">Model</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#intregrating-the-model-into-the-controller">Intregrating the Model into the Controller</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#making-a-functional-view">Making a functional View</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Beginners MVC tutorial</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">A simple Todo -App</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/modir/mvc-tutorial/edit/main/docs/app.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="a-simple-todo-app">A simple Todo -App</h1>
+<p>Now that we have our own MVC up and running we can start
+implementing functionality. We will create a Todo App to keep track
+of our notes and tasks.</p>
+<p>This Todo App can save new Notes, change existing ones and delete
+the one we don't need anymore.</p>
+<p>For ease of use we also change our naming convention.
+So first of all we change our existing files. Everything in the
+controllers folder gets the prefix "Controller_" i.e.:
+Controller_Index.php and everything in models folder gets the
+Prefix "Model_". Our classes in the "classes" folder stay as they are.</p>
+<h2 id="controller">Controller</h2>
+<p>To access this new part of our App we need to set up a new
+controller. So when we open the the site with /Todolist at the end
+of our URL our router can find it and the controller can spring into
+action. The new controller is called Controller_Todolist.php and is
+placed in the controllers folder. We add the following code:</p>
+<pre><code class="language-php">Class Controller_Todo Extends Controller_Base {
+    function index(){
+        $this-&gt;registry['view']-&gt;show('Todoentry_Page');
+    }
+}
+</code></pre>
+<h2 id="view">View</h2>
+<p>Our Controller now calls a view called "Todoitems_Page", but we
+haven't had made this view yet so we have to make it. In the View
+folder we create a new file called "Todoitems_Page".</p>
+<p>Add the following line to the Todoitems_Page.php in our view
+folder:</p>
+<pre><code>Hello from the new Todo view!
+</code></pre>
+<h2 id="model">Model</h2>
+<p>Now to integrate our Model. We need to consider what our model
+shall hold in forms of data. We are making a todolist. We want to
+know what we wrote down as a todo and we want to know if it's
+done or not. So we need two variables, one is "$content" to hold
+what we write down and the other is "$state" to check a task when
+it's done. Of cause we also need $id, to handle saving the todoitem
+into a database.</p>
+<p>So we Create a new file called "Model_Todo.php" in our models
+folder and add the following:</p>
+<pre><code class="language-php">&lt;?php
+class Model_Todoitem {
+    private $id;
+    private $content;
+    private $state;
+
+    /**
+    * Get the value of id
+    */
+    public function getId() {
+        return $this-&gt;id;
+    }
+
+    /**
+    * Set the value of id
+    *
+    * @return self
+    */
+    public function setId($id) {
+        $this-&gt;id = $id;
+        return $this;
+    }
+
+    /**
+    * Get the value of content
+    */
+    public function getContent() {
+        return $this-&gt;content;
+    }
+
+    /**
+    * Set the value of content
+    *
+    * @return self
+    */
+    public function setContent($content) {
+        $this-&gt;content = $content;
+        return $this;
+    }
+
+    /**
+    * Get the value of state
+    */
+    public function getState() {
+        return $this-&gt;state;
+    }
+
+    /**
+    * Set the value of state
+    *
+    * @return self
+    */
+    public function setState($state) {
+        $this-&gt;state = $state;
+        return $this;
+    }
+}
+</code></pre>
+<p>As you see we don't have a constructor for this model. That is
+because our PDO object will do it for us. When we create an object
+from the database with the help of the PDO a constructor is call that
+fills in the attributes automatically.</p>
+<h2 id="intregrating-the-model-into-the-controller">Intregrating the Model into the Controller</h2>
+<p>If we want to use our model we need to expand upon our controller
+to handle our requests. Then we need to build a repository to handle
+the CRUD for App. We will also need a Repository wich we will do
+after the Controller is done.</p>
+<p>First we will expand the controller like this:</p>
+<pre><code class="language-php">Class Controller_Todolist extends Controller_Base {
+
+    /**
+    * index
+    *
+    * @return void
+    */
+    function index(){
+        $repo = new Repository_Todoitem($this-&gt;registry);
+        $entries = $repo-&gt;fetchAll();
+        $this-&gt;registry['view']-&gt;set('entries', $entries);
+        $this-&gt;registry['view']-&gt;show('Todoitems_Page');
+    }
+
+    /**
+    * show
+    *
+    * @return void
+    */
+    function show() {
+        $repo = new Repository_Todoitem($this-&gt;registry);
+        $entry = $repo-&gt;fetch((int)$this-&gt;registry-&gt;get('args')[0]);
+        $this-&gt;registry['view']-&gt;set('id', $entry-&gt;getId());
+        $this-&gt;registry['view']-&gt;set('content', $entry-&gt;getContent());
+        $this-&gt;registry['view']-&gt;set('state', $entry-&gt;getState());
+        $this-&gt;registry['view']-&gt;show('Todoentry_Page');
+    }
+
+    /**
+    * add
+    *
+    * @return void
+    */
+    function add() {
+        $this-&gt;registry['view']-&gt;show('Todoentry_Add_Page');
+        if ($_SERVER['REQUEST_METHOD'] === 'POST'){
+            $repo = new Repository_Todoitem($this-&gt;registry);
+            //state checkbox from vie Returns NULL
+            if($_POST['state'] == NULL){
+                $_POST['state'] = 0;
+            }
+            if($repo-&gt;add($_POST)){
+                header('Location: http://' .$_SERVER[&quot;HTTP_HOST&quot;]. &quot;/Todolist&quot;);
+            }
+        }
+    }
+    /**
+    * delete
+    *
+    * @return void
+    */
+    function delete() {
+        $repo = new Repository_Todoitem($this-&gt;registry);
+        if($repo-&gt;delete($_POST['id'])){
+            header('Location: http://' .$_SERVER[&quot;HTTP_HOST&quot;]. &quot;/Todolist&quot;);
+        }
+    }
+    /**
+    * edit
+    *
+    * @return void
+    */
+    function edit() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST'){
+            $repo = new Repository_Todoitem($this-&gt;registry);
+            if($_POST['state'] == NULL){
+                $_POST['state'] = 0;
+            }
+            if($repo-&gt;update($_POST)){
+                header('Location: http://' .$_SERVER[&quot;HTTP_HOST&quot;]. &quot;/Todolist&quot;);
+            }
+        }
+    }
+}
+</code></pre>
+<p>Fist we expand our index function to get all todoentries with the
+fetchall() function of our upcoming repository. Then we set our
+entries into our view to be able to display them.</p>
+<p>With our show function we want to get a single entry and display it
+on a separate page page that shows only the entry. So we fetch one
+entry with it's id and give the attributes that we want to display to
+the view.</p>
+<p>The add function will, as it says, add a new entry. For that we first
+call for the page to add an entry. Now, if we get a POST request we
+will set the state of our todoentry to 0 if we get NULL, because the
+HTML checkbox we use for our state gives us NULL when
+unchecked. Then we call add and give it our POST Request to fill in a
+Todoitem in the database.</p>
+<p>With delete we just give the id of our entry to the repository to find
+and delete the entry.</p>
+<p>The edit function is exactly like our add function with the only
+difference that we call the update function of our repository.
+Next up is our repository. Our repository lets us interact with our
+database. We create, read, update and delete (CRUD) an entry with
+the help of it.</p>
+<p>As we did with our controller we also create a abstract Class called
+"Repository_Base" in our classes folder:</p>
+<pre><code class="language-php">&lt;?php
+Abstract Class Repository_Base{
+    protected $registry;
+
+    /**
+    * __construct
+    *
+    * @param mixed $registry
+    * @return void
+    */
+    function __construct($registry) {
+        $this-&gt;registry = $registry;
+        $this-&gt;db = $registry['db'];
+    }
+}
+</code></pre>
+<p>This class ensures that our repositories have access to the database
+connection, our PDO, at any point.</p>
+<p>Now create a new file called "Repository_Todoitem.php" in the
+models folder and add the following code:</p>
+<pre><code class="language-php">&lt;?php
+Class Repository_Todoitem extends Repository_Base {
+    /**
+    * fetch
+    *
+    * @param int $id
+    * @return object
+    */
+    function fetch(int $id) : object {
+        $query = 'SELECT `id`, `content`, `state` FROM `todo` WHERE `id` = :id';
+        $statement = $this-&gt;db-&gt;prepare($query);
+        $result = $statement-&gt;execute([':id' =&gt; $id]);
+        if ($statement-&gt;rowCount() === 0) {
+            throw new OutOfRangeException();
+        }
+        $todoItem = $statement-&gt;fetchObject('Model_Todoitem');
+        return $todoItem;
+    }
+
+    /**
+    * fetchAll
+    *
+    * @return array
+    */
+    function fetchAll() : array {
+        $query = 'SELECT `id`, `content`, `state` FROM `todo`';
+        $statement = $this-&gt;db-&gt;prepare($query);
+        $result = $statement-&gt;execute();
+        $rows = $this-&gt;db-&gt;query($query)-&gt;fetchAll(PDO::FETCH_CLASS, 'Model_Todoitem');
+        return $rows;
+    }
+
+    /**
+    * add
+    *
+    * @param mixed $form
+    * @return bool
+    */
+    function add($form) : bool {
+        $query = 'INSERT INTO `todo` SET `content` = :content, `state` = :state';
+        $statement = $this-&gt;db-&gt;prepare($query);
+        $result = $statement-&gt;execute([
+            ':content' =&gt; $form['content'],
+            ':state' =&gt; $form['state']
+        ]);
+        return $result;
+    }
+
+    /**
+    * delete
+    *
+    * @param mixed $id
+    * @return bool
+    */
+    function delete($id) : bool {
+        $query = 'DELETE FROM `todo` WHERE `id` = :id';
+        $statement = $this-&gt;db-&gt;prepare($query);
+        $result = $statement-&gt;execute([':id' =&gt; $id]);
+        return $result;
+    }
+
+    /**
+    * update
+    *
+    * @param mixed $form
+    * @return bool
+    */
+    function update($form) : bool{
+        $query = 'UPDATE `todo` SET `content` = :content, `state` = :state WHERE `id` = :id';
+        $statement = $this-&gt;db-&gt;prepare($query);
+        $result = $statement-&gt;execute([
+            ':id' =&gt; $form['id'],
+            ':content' =&gt; $form['content'],
+            ':state' =&gt; $form['state']
+        ]);
+        return $result;
+    }
+}
+</code></pre>
+<p>All we do here is basically prepre our different statements for our
+CRUD functionality. Than we either fetch our object or objects, fill
+them in and return them. Or we provide data to the statements and
+call upon the database to either update an entry or delete it with it's
+id.</p>
+<h2 id="making-a-functional-view">Making a functional View</h2>
+<p>To now view our todos we need of cause the views to show them.
+For that I prepared three views. "Todoitems_Page.php" to view all
+of our entries. "Todoentry_Page.php" to view a single entry and edit
+or delete it. And "Todoentry_Add_Page" for making a new entry.</p>
+<p>Create these files in the views folder.</p>
+<p>Todoitems_Page:</p>
+<pre><code class="language-php">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;/styles.css&quot;&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+&lt;title&gt;Todoitems&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;?php
+foreach($entries as $entry) {
+    if($entry-&gt;getState() == 1){
+        $done = '- done';
+    } else {
+        $done = '- open';
+    }
+    echo
+    '&lt;a class=&quot;box&quot; href=&quot;/Todolist/show/'.$entry-&gt;getId().'&quot;&gt;'.$entry-
+    &gt;getContent().' '.$done.'&lt;/a&gt;';
+}
+?&gt;
+&lt;a href=&quot;/Todolist/add&quot;&gt;Neuer Eintrag&lt;/a&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>Todoentry_Page:</p>
+<pre><code class="language-php">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;/styles.css&quot;&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+&lt;title&gt;Todoentry&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;form method=&quot;POST&quot; action=&quot;/Todolist/edit/&quot; class=&quot;todoentry&quot;&gt;
+&lt;textarea id=&quot;todotext&quot; name=&quot;content&quot; rows=&quot;4&quot; cols=&quot;50&quot; autofocus&gt;&lt;?php
+echo $content?&gt;&lt;/textarea&gt;
+&lt;span&gt; done?
+&lt;input type=&quot;checkbox&quot; name=&quot;state&quot; value=1 &lt;?php if($state == 1) echo'
+checked' ?&gt; &gt;
+&lt;/span&gt;
+&lt;span&gt;
+&lt;input type=&quot;submit&quot; value=&quot;Save&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;id&quot; value=&quot;&lt;?=$id;?&gt;&quot;&gt;
+&lt;/span&gt;
+&lt;/form&gt;
+&lt;form method=&quot;POST&quot; action=&quot;/Todolist/delete/&quot;&gt;
+&lt;input type=&quot;submit&quot; value=&quot;delete&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;id&quot; value=&quot;&lt;?=$id;?&gt;&quot;&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>Todoentry_Add_Page:</p>
+<pre><code class="language-php">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;/styles.css&quot;&gt;
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+&lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+&lt;title&gt;New Entry&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;New Todo&lt;/h1&gt;
+&lt;form method=&quot;POST&quot;&gt;
+&lt;fieldset&gt;
+&lt;label&gt;
+&lt;span&gt;
+Content
+&lt;textarea id=&quot;todotext&quot; name=&quot;content&quot; rows=&quot;4&quot;
+cols=&quot;50&quot; autofocus&gt;&lt;/textarea&gt;
+&lt;/span&gt;
+&lt;br&gt;
+&lt;span&gt;
+Status
+&lt;input type=&quot;checkbox&quot; name=&quot;state&quot; value=o&gt;
+&lt;/span&gt;
+&lt;/label&gt;
+&lt;/fieldset&gt;
+&lt;input type=&quot;submit&quot; value=&quot;Save&quot;&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>Now we have every thing in place for the Todoapp to work.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Building a simple MVC system with PHP7 and higher"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/modir/mvc-tutorial" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
